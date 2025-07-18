@@ -62,13 +62,13 @@ router.get('/', authMiddleware, async (req, res) => {
     const medicaments = await Database.getMedicamentsByUserId(req.user.id);
     console.log('✅ Medicamentos obtenidos:', medicaments.length);
     
-    // Agregar URL completa de la imagen
+    // ✅ CAMBIO: URL fija en lugar de req.get('host')
     const medicamentsWithImages = medicaments.map(med => ({
       ...med,
       image_url: med.image_url ? 
         (med.image_url.startsWith('http') ? 
           med.image_url : 
-          `${req.protocol}://${req.get('host')}/uploads/medicaments/${path.basename(med.image_url)}`
+          `http://52.201.63.254/uploads/medicaments/${path.basename(med.image_url)}`
         ) : null
     }));
     
@@ -98,13 +98,13 @@ router.get('/:id', authMiddleware, async (req, res) => {
       });
     }
     
-    // Agregar URL completa de la imagen
+    // ✅ CAMBIO: URL fija en lugar de req.get('host')
     const medicamentWithImage = {
       ...medicament,
       image_url: medicament.image_url ? 
         (medicament.image_url.startsWith('http') ? 
           medicament.image_url : 
-          `${req.protocol}://${req.get('host')}/uploads/medicaments/${path.basename(medicament.image_url)}`
+          `http://52.201.63.254/uploads/medicaments/${path.basename(medicament.image_url)}`
         ) : null
     };
     
@@ -146,9 +146,9 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
     let imagePathForDB = null;
     
     if (req.file) {
-      // Si se subió un archivo, usar la ruta del archivo
+      // ✅ CAMBIO: URL fija en lugar de req.get('host')
       console.log('✅ Usando archivo subido:', req.file.filename);
-      finalImageUrl = `${req.protocol}://${req.get('host')}/uploads/medicaments/${req.file.filename}`;
+      finalImageUrl = `http://52.201.63.254/uploads/medicaments/${req.file.filename}`;
       imagePathForDB = req.file.path;
     } else if (image_url && image_url.trim() !== '') {
       // Si se proporcionó una URL externa, usarla
@@ -231,7 +231,8 @@ router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
         fs.unlinkSync(existingMedicament.image_url);
       }
       newImageUrl = req.file.path;
-      finalImageUrl = `${req.protocol}://${req.get('host')}/uploads/medicaments/${req.file.filename}`;
+      // ✅ CAMBIO: URL fija en lugar de req.get('host')
+      finalImageUrl = `http://52.201.63.254/uploads/medicaments/${req.file.filename}`;
     } else if (image_url && image_url.trim() !== '') {
       // Si se proporciona URL externa, eliminar imagen anterior (solo si es archivo local)
       if (existingMedicament.image_url && !existingMedicament.image_url.startsWith('http') && fs.existsSync(existingMedicament.image_url)) {
@@ -240,11 +241,11 @@ router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
       newImageUrl = image_url;
       finalImageUrl = image_url;
     } else {
-      // Mantener imagen existente
+      // ✅ CAMBIO: URL fija en lugar de req.get('host')
       finalImageUrl = existingMedicament.image_url ? 
         (existingMedicament.image_url.startsWith('http') ? 
           existingMedicament.image_url : 
-          `${req.protocol}://${req.get('host')}/uploads/medicaments/${path.basename(existingMedicament.image_url)}`
+          `http://52.201.63.254/uploads/medicaments/${path.basename(existingMedicament.image_url)}`
         ) : null;
     }
 
